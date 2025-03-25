@@ -1,6 +1,6 @@
 tensorflow
 spacy
-python -m spacy download en_core_web_md
+en_core_web_md
 rasa
 pandas
 requests
