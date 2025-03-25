@@ -1,0 +1,16 @@
+tensorflow
+spacy
+python -m spacy download en_core_web_md
+rasa
+pandas
+requests
+fuzzywuzzy
+scikit-learn
+numpy
+streamlit
+gtts
+googletrans==4.0.0-rc1
+transformers
+torch 
+sentencepiece
+Flask
