@@ -1,0 +1,53 @@
+# The config recipe.
+# https://rasa.com/docs/rasa/model-configuration/
+recipe: default.v1
+
+# The assistant project unique identifier
+# This default value must be replaced with a unique assistant name within your deployment
+assistant_id: 20250321-093238-nippy-catalyst
+
+# Configuration for Rasa NLU.
+# https://rasa.com/docs/rasa/nlu/components/
+language: en
+
+# Pipeline for NLU
+pipeline:
+- name: "WhitespaceTokenizer"    # Required for tokenization
+
+  # Language Model Featurizer: to use any pre-trained models(BERT model for featurization)
+- name: "LanguageModelFeaturizer"
+  model_name: "bert"
+  model_weights: "bert-base-uncased"    # Pre-trained BERT model
+
+  # DIETClassifier for intent classification and entity recognition using BERT
+- name: "DIETClassifier"
+  epochs: 100
+  constrain_similarities: true
+  model_confidence: softmax    # Updated to softmax for valid setting
+  intent_classification: true
+  entity_recognition: true
+  use_transformers: true
+  transformer_model_name: "bert-base-uncased"    # Specify the BERT model for fine-tuning
+  embedding_dimension: 768    # Set based on BERT (768 for BERT-base)
+
+  # Entity Synonym Mapper to map synonyms
+- name: "EntitySynonymMapper"
+
+  # Response Selector to handle multi-response scenarios
+- name: "ResponseSelector"
+  epochs: 100
+  constrain_similarities: true
+
+
+# Configuration for Rasa Core (Dialogue management)
+policies:
+- name: "MemoizationPolicy"    # Remembers previous conversations for better handling
+- name: "RulePolicy"    # Allows defining rule-based conversation flows
+  core_fallback_action_name: "action_fallback"
+  core_fallback_threshold: 0.3  # Adjust threshold as needed
+
+- name: "TEDPolicy"    # Transformer Embedding Dialogue Policy (for better dialogue management)
+  max_history: 10    # Number of previous turns to consider for context
+  epochs: 200    # Number of epochs to train TEDPolicy
+  constrain_similarities: true    # Ensures similar intent predictions use a defined similarity threshold
+
