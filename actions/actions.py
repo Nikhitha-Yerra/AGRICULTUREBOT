@@ -83,18 +83,25 @@ class ActionFetchAgricultureInfo(Action):
 
         return []
 
+import os
+
 class ActionFetchWeatherInfo(Action):
     def name(self) -> Text:
         return "action_fetch_weather_info"
 
-    async def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[
-        Dict[Text, Any]]:
+    async def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         location = next(tracker.get_latest_entity_values("location"), None)
+
         if location:
-            api_key = "28b833a9efb4a0c27e91f280cf754a69"
+            api_key = os.getenv("WEATHER_API_KEY")  # Get API key from environment variable
+            if not api_key:
+                dispatcher.utter_message(text="Weather API key is missing! Please check the server settings.")
+                return []
+
             url = f"https://api.openweathermap.org/data/2.5/weather?q={location}&appid={api_key}&units=metric"
             response = requests.get(url)
             data = response.json()
+
             if response.status_code == 200:
                 temp = data['main']['temp']
                 weather_desc = data['weather'][0]['description']
@@ -104,10 +111,8 @@ class ActionFetchWeatherInfo(Action):
         else:
             message = "Please provide a location to fetch weather information."
 
-        telugu_message = translate_to_telugu(message)
-        dispatcher.utter_message(text=f"English: {message}\nTelugu: {telugu_message}")
+        dispatcher.utter_message(text=message)
         return []
-
 
 class ActionFetchHorticultureInfo(Action):
     def name(self) -> Text:
