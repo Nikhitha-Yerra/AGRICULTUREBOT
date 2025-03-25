@@ -1,6 +1,5 @@
 tensorflow
 spacy
-en_core_web_md
 rasa==3.6.21
 pandas
 requests
